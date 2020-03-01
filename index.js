@@ -8,6 +8,7 @@ const port = process.env.PORT || 3000
 
 
 // MIDDLEWARES
+app.use(express.json())
 if(app.get('env') === 'development') {
     app.use(morgan('tiny'))
 }

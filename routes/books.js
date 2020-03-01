@@ -1,4 +1,5 @@
 const express = require('express')
+const joi = require('joi')
 
 const router = express.Router()
 
@@ -29,6 +30,19 @@ const books = [
     }
 ]
 
+const bookValidator = {
+    id: joi.number().required(),
+    name: joi.string().min(3).required(),
+    description: joi.string(),
+    imageUrl: joi.string().uri().required(),
+    author: {
+        firstName: joi.string().min(3).required(),
+        lastName: joi.string().min(3).required(),
+        nbBooks: joi.number().positive()
+    },
+    sources: joi.array()
+}
+
 // ALL
 router.get('/', (req, res) => {
     res.status(200).json(books)
@@ -40,6 +54,25 @@ router.get('/:id', (req, res) => {
     if(!book)
         return res.status(404).json({message: `Book with id ${req.id} not found`})
     res.status(200).json(book)
+})
+
+// ADD
+router.post('/', (req, res) => {
+    let book = {
+        id: books.length + 1,
+        name: req.body.name,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+        author: req.body.author,
+        sources: req.body.sources
+    }
+
+    let resValidator = joi.validate(book, bookValidator)
+    if(resValidator.error)
+        return res.status(400).json({message: resValidator.error.details[0].message})
+
+    books.push(book);
+    res.status(201).json(book)
 })
 
 
