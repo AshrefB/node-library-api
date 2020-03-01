@@ -3,7 +3,7 @@ const joi = require('joi')
 
 const router = express.Router()
 
-const books = [
+var books = [
     {
         id: 1,
         name: 'Book 1',
@@ -96,6 +96,17 @@ router.put('/:id', (req, res) => {
         return res.status(400).json({message: resValidator.error.details[0].message})
 
     books[index] = book
+    res.status(200).json(book)
+})
+
+// DELETE
+router.delete('/:id', (req, res) => {
+    let book = books.find(b => b.id === parseInt(req.params.id))
+
+    if(!book)
+        return res.status(404).json({message: `Book with id ${req.params.id} not found`})
+
+    books = books.filter(b => b !== book)
     res.status(200).json(book)
 })
 
