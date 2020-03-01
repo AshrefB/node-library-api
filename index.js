@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const indexRouter = require('./routes/index')
+const booksRouter = require('./routes/books')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -13,6 +14,7 @@ if(app.get('env') === 'development') {
 
 // ROUTES
 app.use('', indexRouter)
+app.use('/api/books', booksRouter)
 
 // SERVER
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`))
