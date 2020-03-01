@@ -31,7 +31,7 @@ const books = [
 ]
 
 const bookValidator = {
-    id: joi.number().required(),
+    id: joi.number(),
     name: joi.string().min(3).required(),
     description: joi.string(),
     imageUrl: joi.string().uri().required(),
@@ -52,7 +52,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     let book = books.find(b => b.id === parseInt(req.params.id))
     if(!book)
-        return res.status(404).json({message: `Book with id ${req.id} not found`})
+        return res.status(404).json({message: `Book with id ${req.params.id} not found`})
     res.status(200).json(book)
 })
 
@@ -73,6 +73,30 @@ router.post('/', (req, res) => {
 
     books.push(book);
     res.status(201).json(book)
+})
+
+// UPDATE
+router.put('/:id', (req, res) => {
+    let index = books.findIndex(b => b.id === parseInt(req.params.id))
+
+    if(index === -1)
+        return res.status(404).json({message: `Book with id ${req.params.id} not found`})
+    
+    let book = {
+        id: parseInt(req.params.id),
+        name: req.body.name,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+        author: req.body.author,
+        sources: req.body.sources
+    }
+
+    let resValidator = joi.validate(book, bookValidator)
+    if(resValidator.error)
+        return res.status(400).json({message: resValidator.error.details[0].message})
+
+    books[index] = book
+    res.status(200).json(book)
 })
 
 
